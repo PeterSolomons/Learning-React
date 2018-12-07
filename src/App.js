@@ -1,28 +1,29 @@
 import React, { Component } from "react";
 import NavBar from "./components/navbar";
+import Tail from "./components/tail";
 import Counters from "./components/counters";
 import "./App.css";
 
 class App extends Component {
-  state = {
+  request = {
     counters: [
       { id: 1, value: 0 },
-      { id: 2, value: 1 },
-      { id: 3, value: 2 },
-      { id: 4, value: 3 }
-    ]
+      { id: 2, value: 0 },
+      { id: 3, value: 0 },
+      { id: 4, value: 0 }
+    ],
+    log: false
   };
 
   constructor() {
     super();
-    console.log("App - Constructor");
-    // if you need to set the state -
-    //this.state = this.props.something;
+    this.state = this.request;
+    if (this.state.log) console.log("App - Constructor");
   }
 
   componentDidMount() {
     //Ajax call
-    console.log("App - Mounted");
+    if (this.state.log) console.log("App - Mounted");
   }
 
   handleDelete = counterId => {
@@ -38,20 +39,52 @@ class App extends Component {
     this.setState({ counters });
   };
 
-  handleReset = () => {
-    const counters = this.state.counters.map(c => {
-      c.value = 0;
-      return c;
-    });
+  handleDecrement = counter => {
+    const counters = [...this.state.counters];
+    const index = counters.indexOf(counter);
+    counters[index] = { ...counter };
+    if (counters[index].value > 0) {
+      counters[index].value--;
+    }
     this.setState({ counters });
   };
 
+  handleReset = () => {
+    let { log } = { ...this.state };
+    this.request.log = log;
+    this.setState(this.request);
+  };
+
+  handleResetSingle = counter => {
+    const counters = [...this.state.counters];
+    const index = counters.indexOf(counter);
+    counters[index] = { ...counter };
+    const initialVal = { ...this.request.counters[index] };
+    counters[index] = initialVal;
+    this.setState({ counters });
+  };
+
+  totalItems = () => {
+    const { counters } = this.state;
+    let total = 0;
+    for (let i = 0; i < counters.length; i++) {
+      total += counters[i].value;
+    }
+    return total;
+  };
+
+  handleEnableLogging = () => {
+    this.setState({ log: !this.state.log });
+  };
+
   render() {
-    console.log("App - Rendered");
+    if (this.state.log) console.log("App - Rendered");
     return (
       <React.Fragment>
         <NavBar
           totalCounters={this.state.counters.filter(c => c.value > 0).length}
+          totalItems={this.totalItems()}
+          log={this.state.log}
         />
         <main className="container">
           <Counters
@@ -59,8 +92,12 @@ class App extends Component {
             onReset={this.handleReset}
             onIncrement={this.handleIncrement}
             onDelete={this.handleDelete}
+            onDecrement={this.handleDecrement}
+            onResetSingle={this.handleResetSingle}
+            log={this.state.log}
           />
         </main>
+        <Tail log={this.state.log} onEnableLogging={this.handleEnableLogging} />
       </React.Fragment>
     );
   }
