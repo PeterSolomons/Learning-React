@@ -1,3 +1,5 @@
+##This is a rough and ready POC for some react concepts more than anything, this is not a 'finished' product by any strecth of the imagination and should not be used as a reference guide... FUTURE PETE! 
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
